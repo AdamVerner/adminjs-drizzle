@@ -21,7 +21,8 @@ import {
     PgText,
     PgTime,
     PgTimestamp,
-    PgVarchar
+    PgUUID,
+    PgVarchar,
 } from 'drizzle-orm/pg-core';
 
 export class Property extends BaseProperty {
@@ -71,8 +72,8 @@ export class Property extends BaseProperty {
         const column = this.column;
 
         return column instanceof PgEnumColumn
-            || (column instanceof PgText && column.enumValues.length)
-            || (column instanceof PgVarchar && column.enumValues.length);
+            || (column instanceof PgText && column.enumValues?.length)
+            || (column instanceof PgVarchar && column.enumValues?.length);
     }
 
     public type(): PropertyType {
@@ -129,6 +130,10 @@ export class Property extends BaseProperty {
             || column instanceof PgInterval
         ) {
             return 'mixed';
+        }
+
+        if ( column instanceof PgUUID ) {
+            return 'uuid';
         }
 
         console.warn(`Unhandled type: ${ column.getSQLType() }`);
